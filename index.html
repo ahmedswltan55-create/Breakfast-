@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حساب الفطار الدولي - تجميعة الأفراد وحسبة الدليفري</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      opacity: 1;
+    }
+
+    .section-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #1e293b;
+      padding-bottom: 0.35rem;
+      border-bottom: 3px solid #2563eb;
+      margin-bottom: 1rem;
+    }
+
+    .dotted-divider {
+      border-top: 2px dotted #cbd5e1;
+      margin: 1.25rem 0;
+    }
+
+    @media print {
+      @page {
+        size: A5 portrait;
+        margin: 8mm;
+      }
+      body {
+        background: #ffffff !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      #main-card {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 12px !important;
+      }
+      .empty-item-row.hide-on-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen py-5 px-3 sm:px-6 flex flex-col items-center">
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 hidden no-print">
+    <div id="toast-box" class="bg-slate-900 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-bold flex items-center gap-2 border border-slate-700">
+      <span id="toast-icon">✅</span>
+      <span id="toast-message">تم الحفظ بنجاح</span>
+    </div>
+  </div>
+
+  <!-- Hosting & Deployment Guide Modal -->
+  <div id="hosting-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+        <h3 class="font-extrabold text-slate-800 text-base flex items-center gap-2">🌐 رفع الموقع على الإنترنت مجاناً (في دقيقة)</h3>
+        <button id="close-hosting-modal-btn" type="button" class="text-slate-400 hover:text-slate-700 text-xl font-bold px-2">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs font-semibold text-slate-700 leading-relaxed">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-blue-950">
+          <div class="font-black mb-1">الخطوة ١: حمّل ملف الموقع الجاهز</div>
+          <p class="mb-2">اضغط الزر ده لتحميل ملف الموقع (<code class="bg-white px-1.5 py-0.5 rounded">index.html</code>) على موبايلك أو جهازك:</p>
+          <button
+            id="download-html-file-btn"
+            type="button"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 px-3 rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition"
+          >
+            <span>⬇️</span>
+            <span>تحميل ملف الموقع جاهز للرفع (index.html)</span>
+          </button>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-950 space-y-2">
+          <div class="font-black">الخطوة ٢: ارفعه وخد لينك شغال للكل مجاناً</div>
+          <p>اختر أي موقع من دول وارفع عليه ملف <code class="bg-white px-1 rounded">index.html</code> في ثواني بدون برمجة:</p>
+          <ul class="list-disc list-inside space-y-1.5 font-bold">
+            <li>
+              <a href="https://tiiny.host" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline">موقع Tiiny.host</a>: افتحه من الموبايل، ارفع ملف <code class="bg-white px-1 rounded">index.html</code> واكتب اسم للينك واضغط Publish.
+            </li>
+            <li>
+              <a href="https://app.netlify.com/drop" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline">موقع Netlify Drop</a>: اسحب الملف وحطه في الصفحة هيديك لينك فوري دائم.
+            </li>
+            <li>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline">GitHub Pages</a>: ارفع ملف <code class="bg-white px-1 rounded">index.html</code> في Repository وفعل Pages زي الموقع الأصلي.
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+          <label for="custom-public-url-input" class="block font-extrabold text-slate-800 mb-1">
+            🔗 معاك اللينك بعد ما رفعته؟ حطه هنا (اختياري):
+          </label>
+          <input
+            id="custom-public-url-input"
+            type="url"
+            placeholder="https://my-fatar.netlify.app"
+            class="w-full bg-white border border-slate-300 rounded-lg py-2 px-3 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p class="text-[11px] text-slate-500 mt-1">
+            لما تحط اللينك هنا، زر "نسخ لينك الطلبات" هيطلع لزمايلك اللينك الأونلاين بتاعك مباشرة!
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-end">
+        <button id="close-hosting-modal-btn-2" type="button" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-4 rounded-xl transition text-xs">
+          تم، فهمت
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Confirmation Modal -->
+  <div id="reset-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center">
+      <div class="text-4xl mb-3">🔄</div>
+      <h3 class="text-lg font-extrabold text-slate-800 mb-2">تصفير الفاتورة بالكامل؟</h3>
+      <p class="text-sm text-slate-600 mb-5">هل أنت متأكد من مسح جميع الأرقام وطلبات الأفراد لبدء تجميعة فطار جديدة؟</p>
+      <div class="flex gap-3">
+        <button id="confirm-reset-btn" type="button" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-xl transition">
+          نعم، صفّر الفاتورة
+        </button>
+        <button id="cancel-reset-btn" type="button" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl transition">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Member Order Modal -->
+  <div id="import-order-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-100">
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+        <h3 class="font-extrabold text-slate-800 text-base flex items-center gap-2">📥 استيراد طلب زميل (من واتساب أو كود)</h3>
+        <button id="close-import-modal-btn" type="button" class="text-slate-400 hover:text-slate-700 text-xl font-bold px-2">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 font-semibold mb-3 leading-relaxed">
+        انسخ الرسالة أو الكود اللي صاحبك بعتهولك من صفحة الطلبات وحطه هنا، وهيتضاف فوراً باسمه وطلباته ورقم دفعه في التجميعة:
+      </p>
+      <textarea
+        id="import-order-textarea"
+        rows="4"
+        placeholder="الصق هنا كود الطلب أو رسالة الواتساب اللي بعتها زميلك..."
+        class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
+      ></textarea>
+      <div class="flex gap-2">
+        <button id="confirm-import-order-btn" type="button" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 px-4 rounded-xl transition text-sm">
+          ✅ إضافة الطلب للتجميعة
+        </button>
+        <button id="cancel-import-modal-btn" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl transition text-sm">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Preview Modal -->
+  <div id="image-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-100 flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+        <h3 class="font-extrabold text-slate-800 text-base flex items-center gap-2">📸 صورة فاتورة الفطار</h3>
+        <button id="close-image-modal-btn" type="button" class="text-slate-400 hover:text-slate-700 text-xl font-bold px-2">&times;</button>
+      </div>
+      <div class="overflow-y-auto flex-1 bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-center">
+        <img id="generated-invoice-img" alt="فاتورة الفطار" class="max-w-full h-auto rounded-lg shadow-xs" />
+      </div>
+      <div class="mt-4 flex gap-3">
+        <button id="download-image-btn" type="button" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-center font-bold py-2.5 px-4 rounded-xl transition">
+          ⬇️ تحميل الصورة
+        </button>
+        <button id="close-image-modal-btn-2" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl transition">
+          إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Mode Switcher Bar (Admin vs Member Link View) -->
+  <div class="w-full max-w-md mb-3 bg-white p-1.5 rounded-2xl shadow-xs border border-slate-200/90 grid grid-cols-2 gap-1.5 no-print">
+    <button
+      id="switch-admin-view-btn"
+      type="button"
+      class="py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-blue-600 text-white shadow-xs"
+    >
+      <span>👑</span>
+      <span>لوحة المنظم والتجميعة</span>
+      <span id="orders-badge-count" class="bg-white text-blue-700 text-[11px] font-black px-1.5 py-0.5 rounded-full">0</span>
+    </button>
+    <button
+      id="switch-member-view-btn"
+      type="button"
+      class="py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-50 text-slate-700 hover:bg-slate-100"
+    >
+      <span>📱</span>
+      <span>صفحة طلب الفرد (اللينك)</span>
+    </button>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- VIEW 2: MEMBER ORDER SUBMISSION VIEW (صفحة تسجيل طلب الفرد) -->
+  <!-- ========================================================= -->
+  <div id="member-view-card" class="w-full max-w-md bg-white rounded-3xl shadow-md border border-slate-200/80 p-5 sm:p-6 hidden no-print mb-6">
+    <div class="text-center">
+      <div class="flex items-center justify-center gap-2 mb-2">
+        <span class="inline-block bg-indigo-100 text-indigo-800 text-xs font-extrabold px-3 py-1 rounded-full">
+          📱 لينك تسجيل طلبات الفطار عن بُعد
+        </span>
+        <span id="member-room-badge" class="inline-block bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-1 rounded-full font-mono">
+          غرفة: FATAR1
+        </span>
+      </div>
+      <h2 class="text-2xl font-black text-slate-800 flex items-center justify-center gap-2">
+        <span>سجّل فطارك من مكانك</span>
+        <span>🥪</span>
+      </h2>
+      <p class="text-xs font-semibold text-slate-500 mt-1">
+        اكتب اسمك وطلباتك ورقم الدفع وهيتبعت تلقائياً في شاشة منظم الفطار!
+      </p>
+    </div>
+
+    <!-- Admin Payment Info Banner (if set by organizer) -->
+    <div id="member-admin-pay-banner" class="mt-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-xs hidden">
+      <div class="font-extrabold text-emerald-900 mb-1 flex items-center justify-between">
+        <span>💸 بيانات التحويل لمنظم الفطار:</span>
+        <button id="copy-admin-pay-btn" type="button" class="bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold hover:bg-emerald-700">
+          نسخ الرقم
+        </button>
+      </div>
+      <div id="member-admin-pay-text" class="font-bold text-emerald-800"></div>
+    </div>
+
+    <div class="dotted-divider"></div>
+
+    <!-- Step 1: Member Personal & Payment Info -->
+    <div class="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 mb-4 space-y-3">
+      <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-1.5 border-b border-slate-200 pb-2">
+        <span>👤</span>
+        <span>١. بياناتك ورقم الدفع:</span>
+      </h3>
+
+      <div>
+        <label for="member-name-input" class="block text-xs font-extrabold text-slate-700 mb-1">اسمك بالكامل أو اسم الشهرة: *</label>
+        <input
+          id="member-name-input"
+          type="text"
+          placeholder="مثال: أحمد سعد / محمد علي"
+          class="w-full bg-white border border-slate-300 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label for="member-pay-method" class="block text-xs font-extrabold text-slate-700 mb-1">طريقة الدفع / الاستلام:</label>
+          <select
+            id="member-pay-method"
+            class="w-full bg-white border border-slate-300 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="إنستا باي (InstaPay)">⚡ إنستا باي (InstaPay)</option>
+            <option value="فودافون كاش">🔴 فودافون كاش</option>
+            <option value="اتصالات كاش">🟢 اتصالات كاش</option>
+            <option value="أورانج كاش">🟠 أورانج كاش</option>
+            <option value="وي باي (WE Pay)">🟣 وي باي (WE Pay)</option>
+            <option value="كاش (نقدي)">💵 كاش في الإيد</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="member-pay-number" class="block text-xs font-extrabold text-slate-700 mb-1">رقم المحفظة / حساب الدفع:</label>
+          <input
+            id="member-pay-number"
+            type="text"
+            placeholder="010xxxxxxxx / user@instapay"
+            class="w-full bg-white border border-slate-300 rounded-xl py-2.5 px-3 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Member Breakfast Items Selection -->
+    <div class="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 mb-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
+        <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-1.5">
+          <span>🍽️</span>
+          <span>٢. نفسك تفطر إيه النهاردة؟</span>
+        </h3>
+        <span class="text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+          اكتب المبلغ أو أضف صنفك
+        </span>
+      </div>
+
+      <!-- Quick Menu Items for Member -->
+      <div id="member-quick-items-list" class="grid grid-cols-1 gap-2 mb-3">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- Add Specific Sandwich/Order for Member -->
+      <div class="bg-indigo-50/70 border-2 border-dashed border-indigo-200 rounded-xl p-3 mb-3">
+        <div class="text-xs font-extrabold text-indigo-950 mb-2">➕ إضافة طلب مخصوص (ساندوتش / علبة / مشروب):</div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input
+            id="member-custom-item-name"
+            type="text"
+            placeholder="مثال: 2 فلافل محشية + 1 فول بالزيت"
+            class="flex-1 bg-white border border-slate-300 rounded-lg py-2 px-3 text-xs sm:text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <div class="flex gap-2">
+            <input
+              id="member-custom-item-price"
+              type="number"
+              min="0"
+              step="0.5"
+              placeholder="السعر (ج)"
+              class="w-28 bg-white border border-slate-300 rounded-lg py-2 px-2.5 text-center text-xs sm:text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button
+              id="member-add-custom-btn"
+              type="button"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-3.5 py-2 rounded-lg text-sm transition"
+            >
+              + أضف
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="mb-3">
+        <label for="member-order-notes" class="block text-xs font-extrabold text-slate-700 mb-1">📝 ملاحظات على طلبك (اختياري):</label>
+        <input
+          id="member-order-notes"
+          type="text"
+          placeholder="مثال: عيش بلدي، بدون شطة، كتر طحينة..."
+          class="w-full bg-white border border-slate-300 rounded-xl py-2 px-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Member Total Preview -->
+      <div class="bg-amber-100/90 border border-amber-300 rounded-xl p-3 flex items-center justify-between text-amber-950 font-black">
+        <span class="text-xs sm:text-sm">إجمالي حساب طلباتك (قبل الدليفري):</span>
+        <span id="member-live-total" class="text-base sm:text-lg">0 جنيه</span>
+      </div>
+    </div>
+
+    <!-- Step 3: Submit Order Buttons -->
+    <div class="space-y-2.5">
+      <button
+        id="submit-member-order-btn"
+        type="button"
+        class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-black py-3.5 px-4 rounded-xl shadow-md flex items-center justify-center gap-2 transition text-sm sm:text-base"
+      >
+        <span>🚀</span>
+        <span>إرسال وتسجيل طلبي في التجميعة</span>
+      </button>
+
+      <div id="member-submitted-actions" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 space-y-2.5">
+        <div class="text-xs font-extrabold text-emerald-900 text-center">
+          ✅ تم إرسال طلبك سحابياً للغرفة! وكمان تقدر تأكده للمنظم على واتساب بضغطة:
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button
+            id="send-member-order-whatsapp-btn"
+            type="button"
+            class="bg-green-600 hover:bg-green-700 text-white font-extrabold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
+          >
+            <span>📲</span>
+            <span>إرسال للمنظم واتساب</span>
+          </button>
+          <button
+            id="copy-member-order-code-btn"
+            type="button"
+            class="bg-slate-800 hover:bg-slate-900 text-white font-extrabold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
+          >
+            <span>📋</span>
+            <span>نسخ كود طلبي للمنظم</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- VIEW 1: MAIN ADMIN CARD CONTAINER (لوحة المنظم والفاتورة) -->
+  <!-- ========================================================= -->
+  <main id="main-card" class="w-full max-w-md bg-white rounded-3xl shadow-md border border-slate-200/80 p-5 sm:p-6">
+    
+    <!-- Header -->
+    <header class="text-center">
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-800 flex items-center justify-center gap-2">
+        <span>حساب الفطار الدولي</span>
+        <span>🍳</span>
+      </h1>
+      <div class="mt-2.5 inline-block bg-slate-100 text-slate-600 text-xs font-bold px-4 py-1.5 rounded-full border border-slate-200/70" id="live-datetime">
+        الأربعاء، ٢٨ أكتوبر ٢٠٢٦ - ١٢:٢٥ ص
+      </div>
+    </header>
+
+    <div class="dotted-divider"></div>
+
+    <!-- NEW SECTION: تجميعة طلبات الأفراد باللينك عن بُعد + مزامنة سحابية -->
+    <section class="bg-indigo-50/60 border-2 border-indigo-200/80 rounded-2xl p-4 mb-5">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="section-title !mb-0 !border-indigo-600">
+          <span>🙋‍♂️</span>
+          <span>تجميعة طلبات الأفراد</span>
+        </h2>
+        <button
+          id="open-hosting-modal-btn"
+          type="button"
+          class="no-print text-[11px] font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-full shadow-2xs transition flex items-center gap-1"
+        >
+          <span>🌐</span>
+          <span>رفع الموقع أونلاين</span>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-600 font-semibold mb-3 leading-relaxed no-print">
+        ابعت اللينك لزمايلك؛ أي حد هيكتب طلبه من موبايله هيتجمع عندك هنا تلقائياً بالاسم والطلبات ورقم الدفع:
+      </p>
+
+      <!-- Cloud Room Code & Organizer Settings -->
+      <div class="bg-white border border-indigo-100 rounded-xl p-3 mb-3 space-y-2.5 no-print">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-extrabold text-indigo-950 flex items-center gap-1">
+            <span>☁️</span>
+            <span>كود غرفة التجميعة اللايف (يربط الموبايلات ببعض):</span>
+          </div>
+          <button
+            id="refresh-cloud-orders-btn"
+            type="button"
+            class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-md text-[11px] font-extrabold transition"
+          >
+            🔄 تحديث الطلبات
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input
+            id="room-code-input"
+            type="text"
+            placeholder="مثال: FATAR-100"
+            class="flex-1 bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2.5 text-xs font-black font-mono text-indigo-900 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <span id="cloud-sync-status" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 shrink-0">
+            🟢 متصل سحابياً
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+          <input
+            id="admin-whatsapp-input"
+            type="text"
+            placeholder="رقم واتسابك (مثال: 010...)"
+            class="bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <input
+            id="admin-pay-info-input"
+            type="text"
+            placeholder="رقم فودافون كاش / InstaPay بتاعك"
+            class="bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+      </div>
+
+      <!-- Link Sharing & Import Controls -->
+      <div class="grid grid-cols-2 gap-2 mb-3 no-print">
+        <button
+          id="copy-member-link-btn"
+          type="button"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-2xs transition"
+        >
+          <span>🔗</span>
+          <span>نسخ لينك الطلبات</span>
+        </button>
+
+        <button
+          id="share-link-whatsapp-btn"
+          type="button"
+          class="bg-green-600 hover:bg-green-700 text-white font-extrabold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-2xs transition"
+        >
+          <span>📲</span>
+          <span>مشاركة على واتساب</span>
+        </button>
+
+        <button
+          id="open-member-form-btn"
+          type="button"
+          class="bg-white hover:bg-slate-100 text-indigo-800 border border-indigo-200 font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
+        >
+          <span>➕</span>
+          <span>إضافة طلب فرد الآن</span>
+        </button>
+
+        <button
+          id="open-import-modal-btn"
+          type="button"
+          class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition"
+        >
+          <span>📥</span>
+          <span>لصق طلب من واتساب</span>
+        </button>
+      </div>
+
+      <!-- List of Collected Individual Orders -->
+      <div id="member-orders-list" class="space-y-2.5 mb-3">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- Sync Button & Summary of Individual Orders -->
+      <div id="member-orders-footer" class="bg-indigo-100/80 border border-indigo-200 rounded-xl p-3 flex flex-col gap-2">
+        <div class="flex items-center justify-between text-indigo-950 font-extrabold text-xs sm:text-sm">
+          <span>إجمالي طلبات الأفراد المسجلين (<span id="registered-members-count">0</span>):</span>
+          <span id="registered-members-total">0 جنيه</span>
+        </div>
+        <button
+          id="sync-orders-to-invoice-btn"
+          type="button"
+          class="no-print w-full bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition"
+        >
+          <span>🔄</span>
+          <span>تجميع كل طلبات الأفراد في الفاتورة الرئيسية تلقائياً</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 1: الميزانية -->
+    <section class="bg-slate-50/70 border border-slate-200/70 rounded-2xl p-4 mb-5">
+      <div class="flex justify-start">
+        <h2 class="section-title">
+          <span>💰</span>
+          <span>الميزانية</span>
+        </h2>
+      </div>
+
+      <div class="space-y-3">
+        <!-- عدد الأفراد -->
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3 flex items-center justify-between gap-3 shadow-2xs">
+          <label for="people-count" class="font-bold text-slate-700 text-sm sm:text-base flex items-center gap-2">
+            <span>👥</span>
+            <span>عدد الأفراد:</span>
+          </label>
+          <input
+            id="people-count"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="مثال: 7"
+            class="w-32 sm:w-36 text-center font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+          />
+        </div>
+
+        <!-- هنلم كام من كل واحد -->
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3 flex items-center justify-between gap-3 shadow-2xs">
+          <label for="amount-per-person" class="font-bold text-slate-700 text-sm sm:text-base flex items-center gap-2 leading-snug">
+            <span>💵</span>
+            <span>هنلم كام من كل واحد:</span>
+          </label>
+          <input
+            id="amount-per-person"
+            type="number"
+            min="0"
+            step="0.5"
+            placeholder="مثال: 25"
+            class="w-32 sm:w-36 text-center font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+          />
+        </div>
+
+        <!-- إجمالي الميزانية -->
+        <div class="bg-emerald-100/90 border border-emerald-200 rounded-xl p-3.5 flex items-center justify-between text-emerald-900 font-extrabold">
+          <span class="text-sm sm:text-base">إجمالي الميزانية:</span>
+          <span id="total-budget-display" class="text-base sm:text-lg">0 جنيه</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: الطلبات والأصناف (المجمعة للمطعم) -->
+    <section class="bg-slate-50/70 border border-slate-200/70 rounded-2xl p-4 mb-5">
+      <div class="flex items-center justify-between">
+        <h2 class="section-title">
+          <span>🛒</span>
+          <span>الطلبات والأصناف</span>
+        </h2>
+        <span class="text-[11px] font-bold text-slate-500">التجميعة الكلية للمطعم</span>
+      </div>
+
+      <!-- Default & Custom Items List -->
+      <div id="items-container" class="space-y-2.5 mb-4">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- Add New Custom Item Box -->
+      <div class="bg-blue-50/60 border-2 border-dashed border-blue-200 rounded-xl p-3.5 mb-4 no-print">
+        <div class="text-xs sm:text-sm font-extrabold text-blue-900 mb-2.5 flex items-center gap-1.5">
+          <span>➕</span>
+          <span>حاجات تانية (إضافة صنف جديد):</span>
+        </div>
+        <div class="space-y-2.5">
+          <input
+            id="custom-item-name"
+            type="text"
+            placeholder="اسم الحاجة (مثال: شاي، مخلل...)"
+            class="w-full bg-white border border-slate-300 rounded-lg py-2 px-3 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div class="flex items-center gap-2">
+            <input
+              id="custom-item-price"
+              type="number"
+              min="0"
+              step="0.5"
+              placeholder="السعر"
+              class="flex-1 bg-white border border-slate-300 rounded-lg py-2 px-3 text-center text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              id="add-custom-item-btn"
+              type="button"
+              title="إضافة صنف"
+              class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-black text-lg w-11 h-10 rounded-lg flex items-center justify-center shadow-xs transition"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- إجمالي الطلبات (الأكل فقط) -->
+      <div class="bg-amber-100/90 border border-amber-200 rounded-xl p-3.5 flex items-center justify-between text-amber-900 font-extrabold">
+        <span class="text-sm sm:text-base">إجمالي الطلبات:</span>
+        <span id="total-orders-display" class="text-base sm:text-lg">0 جنيه</span>
+      </div>
+    </section>
+
+    <!-- Section 3: حسبة الدليفري والتوصيل -->
+    <section class="bg-slate-50/70 border border-slate-200/70 rounded-2xl p-4 mb-5">
+      <div class="flex items-center justify-between">
+        <h2 class="section-title">
+          <span>🛵</span>
+          <span>حسبة الدليفري</span>
+        </h2>
+        <span class="text-xs font-bold bg-orange-100 text-orange-800 px-2.5 py-1 rounded-full border border-orange-200">
+          شامل التقسيم
+        </span>
+      </div>
+
+      <div class="space-y-3">
+        <!-- سعر الدليفري -->
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3 flex items-center justify-between gap-3 shadow-2xs">
+          <label for="delivery-fee" class="font-bold text-slate-700 text-sm sm:text-base flex items-center gap-2">
+            <span>🛵</span>
+            <span>سعر الدليفري:</span>
+          </label>
+          <input
+            id="delivery-fee"
+            type="number"
+            min="0"
+            step="0.5"
+            value="0"
+            placeholder="0"
+            class="w-32 sm:w-36 text-center font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+          />
+        </div>
+
+        <!-- إكرامية الطيار / رسوم إضافية -->
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3 flex items-center justify-between gap-3 shadow-2xs">
+          <label for="delivery-tip" class="font-bold text-slate-700 text-sm sm:text-base flex items-center gap-2">
+            <span>🎁</span>
+            <span>إكرامية / خدمة:</span>
+          </label>
+          <input
+            id="delivery-tip"
+            type="number"
+            min="0"
+            step="0.5"
+            value="0"
+            placeholder="0"
+            class="w-32 sm:w-36 text-center font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+          />
+        </div>
+
+        <!-- طريقة حساب الدليفري -->
+        <div class="bg-white border border-slate-200/80 rounded-xl p-3 shadow-2xs no-print">
+          <div class="text-xs font-extrabold text-slate-600 mb-2">طريقة حساب الدليفري:</div>
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              id="mode-from-budget-btn"
+              type="button"
+              class="py-2 px-2.5 rounded-lg text-xs font-extrabold border transition bg-blue-600 text-white border-blue-600"
+            >
+              خصم من الميزانية
+            </button>
+            <button
+              id="mode-extra-per-person-btn"
+              type="button"
+              class="py-2 px-2.5 rounded-lg text-xs font-extrabold border transition bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+            >
+              يُضاف فوق حصة الفرد
+            </button>
+          </div>
+        </div>
+
+        <!-- تفاصيل حسبة الدليفري -->
+        <div class="bg-orange-50 border border-orange-200 rounded-xl p-3.5 space-y-2">
+          <div class="flex items-center justify-between text-orange-950 font-extrabold text-sm">
+            <span>إجمالي الدليفري والخدمة:</span>
+            <span id="total-delivery-display">0 جنيه</span>
+          </div>
+          <div class="flex items-center justify-between text-orange-800 font-bold text-xs border-t border-orange-200/70 pt-2">
+            <span>نصيب الفرد من الدليفري:</span>
+            <span id="delivery-per-person-display">0 جنيه</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: الخلاصة -->
+    <section class="bg-slate-50/70 border border-slate-200/70 rounded-2xl p-4 mb-4">
+      <div class="flex justify-start">
+        <h2 class="section-title">
+          <span>📊</span>
+          <span>الخلاصة</span>
+        </h2>
+      </div>
+
+      <div class="space-y-2.5">
+        <!-- الإجمالي الكلي (طلبات + دليفري) -->
+        <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between text-slate-800 font-extrabold text-sm">
+          <span>إجمالي الفاتورة (بالدليفري):</span>
+          <span id="grand-total-display" class="text-base text-slate-900">0 جنيه</span>
+        </div>
+
+        <!-- المفروض كل واحد يدفع كام فعلياً -->
+        <div class="bg-indigo-50/90 border border-indigo-200 rounded-xl p-3 flex items-center justify-between text-indigo-950 font-extrabold text-sm">
+          <span id="fair-share-label">التكلفة الفعلية للفرد (بالدليفري):</span>
+          <span id="fair-share-display" class="text-base">0 جنيه</span>
+        </div>
+
+        <!-- الباقي معانا / العجز -->
+        <div id="balance-box" class="bg-sky-100/90 border border-sky-200 rounded-xl p-3.5 flex items-center justify-between text-sky-900 font-black transition">
+          <span id="balance-label" class="text-sm sm:text-base">الباقي معانا:</span>
+          <span id="balance-display" class="text-base sm:text-lg">0 جنيه</span>
+        </div>
+
+        <!-- توضيح إضافي عند وجود عجز أو فائض لكل فرد -->
+        <div id="per-person-diff-note" class="hidden text-xs font-bold text-center py-2 px-3 rounded-lg"></div>
+      </div>
+    </section>
+
+    <!-- Print Option Checkbox -->
+    <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 mb-4 flex items-center justify-between gap-3 no-print">
+      <label for="show-empty-items" class="text-xs sm:text-sm font-bold text-slate-600 cursor-pointer select-none leading-relaxed">
+        إظهار الأصناف الفارغة (0 جنيه) في الفاتورة المطبوعة
+      </label>
+      <input
+        id="show-empty-items"
+        type="checkbox"
+        class="w-5 h-5 accent-blue-600 rounded cursor-pointer shrink-0"
+      />
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="space-y-2.5 no-print">
+      <button
+        id="print-btn"
+        type="button"
+        class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-extrabold py-3.5 px-4 rounded-xl shadow-xs flex items-center justify-center gap-2 transition text-sm sm:text-base"
+      >
+        <span>🖨️</span>
+        <span>طباعة الفاتورة (A5)</span>
+      </button>
+
+      <button
+        id="save-image-btn"
+        type="button"
+        class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-extrabold py-3.5 px-4 rounded-xl shadow-xs flex items-center justify-center gap-2 transition text-sm sm:text-base"
+      >
+        <span>📸</span>
+        <span>حفظ كصورة للموبايل</span>
+      </button>
+
+      <button
+        id="copy-whatsapp-btn"
+        type="button"
+        class="w-full bg-teal-600 hover:bg-teal-700 active:scale-[0.99] text-white font-extrabold py-3 px-4 rounded-xl shadow-xs flex items-center justify-center gap-2 transition text-sm"
+      >
+        <span>💬</span>
+        <span>نسخ الفاتورة للواتساب</span>
+      </button>
+
+      <button
+        id="reset-btn"
+        type="button"
+        class="w-full bg-slate-100 hover:bg-slate-200 active:scale-[0.99] text-slate-700 font-extrabold py-3 px-4 rounded-xl border border-slate-200/80 flex items-center justify-center gap-2 transition text-xs sm:text-sm"
+      >
+        <span>🔄</span>
+        <span>تصفير الفاتورة لبدء تجميعة جديدة</span>
+      </button>
+    </div>
+
+    <div class="dotted-divider no-print"></div>
+
+    <!-- Footer Counter & Badge -->
+    <footer class="flex flex-col items-center gap-3 pt-1 no-print">
+      <div class="inline-flex items-center gap-2 bg-white border border-slate-200 px-3.5 py-1.5 rounded-full shadow-2xs text-xs font-bold text-slate-600">
+        <span>👁️ عدد الزيارات:</span>
+        <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[11px] font-mono" id="visit-counter">520</span>
+        <span class="bg-slate-800 text-white px-2 py-0.5 rounded text-[11px]">Visits</span>
+      </div>
+
+      <div class="bg-slate-900 text-white text-xs font-bold px-5 py-2 rounded-full shadow-md flex items-center gap-1.5">
+        <span>✨</span>
+        <span>حاسبة الفطار والدليفري الذكية</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    // Default Breakfast Items matching the uploaded design
+    const DEFAULT_ITEMS = [
+      { id: 'bread', name: 'عيش', emoji: '🍞', price: 0, isCustom: false },
+      { id: 'cheese', name: 'جبنة', emoji: '🧀', price: 0, isCustom: false },
+      { id: 'foul', name: 'فول', emoji: '🍲', price: 0, isCustom: false },
+      { id: 'taameya', name: 'طعمية', emoji: '🧆', price: 0, isCustom: false },
+      { id: 'eggs', name: 'بيض', emoji: '🥚', price: 0, isCustom: false },
+      { id: 'luncheon', name: 'لانشون', emoji: '🥩', price: 0, isCustom: false },
+      { id: 'halawa', name: 'حلاوة', emoji: '🍯', price: 0, isCustom: false },
+      { id: 'fries', name: 'بطاطس', emoji: '🍟', price: 0, isCustom: false },
+      { id: 'eggplant', name: 'بتنجان', emoji: '🍆', price: 0, isCustom: false }
+    ];
+
+    // App State
+    let state = {
+      activeView: 'admin', // 'admin' | 'member'
+      roomCode: 'FATAR-' + Math.floor(100 + Math.random() * 900),
+      customPublicUrl: '',
+      adminWhatsapp: '',
+      adminPayInfo: '',
+      peopleCount: '',
+      amountPerPerson: '',
+      deliveryFee: 0,
+      deliveryTip: 0,
+      deliveryMode: 'from_budget', // 'from_budget' | 'extra_per_person'
+      showEmptyInPrint: false,
+      items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)),
+      memberOrders: []
+    };
+
+    let memberDraftItems = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+    let lastSubmittedOrderCode = '';
+    let lastSubmittedOrderText = '';
+    let cloudEventSource = null;
+
+    const STORAGE_KEY = 'fatar_calculator_state_v3';
+
+    // Real-time BroadcastChannel for instant sync across browser tabs
+    let syncChannel = null;
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        syncChannel = new BroadcastChannel('fatar_live_orders_channel');
+        syncChannel.onmessage = (event) => {
+          if (event.data && event.data.type === 'NEW_MEMBER_ORDER') {
+            addOrUpdateMemberOrder(event.data.order, true);
+          }
+        };
+      }
+    } catch (e) {}
+
+    // Cloud Room Sync via public ntfy.sh JSON stream (works across different phones automatically!)
+    function getCloudTopic() {
+      const cleanRoom = (state.roomCode || 'FATAR1')
+        .trim()
+        .replace(/[^A-Za-z0-9_-]/g, '')
+        .toUpperCase() || 'FATAR1';
+      return 'fatar_intl_room_' + cleanRoom;
+    }
+
+    async function pushOrderToCloudRoom(order) {
+      const topic = getCloudTopic();
+      try {
+        await fetch('https://ntfy.sh/' + topic, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify({ type: 'FATAR_CLOUD_ORDER', order: order })
+        });
+      } catch (e) {
+        // Fallback is WhatsApp link/code
+      }
+    }
+
+    async function fetchCloudRoomOrders(showToastOnDone = false) {
+      const topic = getCloudTopic();
+      const statusEl = document.getElementById('cloud-sync-status');
+      if (statusEl) statusEl.textContent = '🔄 جاري المزامنة...';
+
+      try {
+        const res = await fetch('https://ntfy.sh/' + topic + '/json?poll=1&since=16h');
+        if (res.ok) {
+          const text = await res.text();
+          const lines = text.split('\n').filter(Boolean);
+          let addedCount = 0;
+          lines.forEach((line) => {
+            try {
+              const env = JSON.parse(line);
+              if (env && env.message) {
+                const payload = JSON.parse(env.message);
+                if (payload && payload.type === 'FATAR_CLOUD_ORDER' && payload.order) {
+                  addOrUpdateMemberOrder(payload.order, true);
+                  addedCount++;
+                }
+              }
+            } catch (err) {}
+          });
+          if (statusEl) statusEl.textContent = '🟢 متصل سحابياً';
+          if (showToastOnDone) {
+            showToast(
+              addedCount > 0
+                ? `تم تحديث ومزامنة الطلبات من الغرفة (${state.roomCode})!`
+                : 'لا توجد طلبات جديدة في الغرفة حالياً',
+              '☁️'
+            );
+          }
+        }
+      } catch (e) {
+        if (statusEl) statusEl.textContent = '⚡ وضع محلي / واتساب';
+      }
+    }
+
+    function connectCloudLiveStream() {
+      if (cloudEventSource) {
+        try {
+          cloudEventSource.close();
+        } catch (e) {}
+      }
+      if (typeof EventSource === 'undefined') return;
+      try {
+        const topic = getCloudTopic();
+        cloudEventSource = new EventSource('https://ntfy.sh/' + topic + '/sse');
+        cloudEventSource.onmessage = (event) => {
+          try {
+            const env = JSON.parse(event.data);
+            if (env && env.message) {
+              const payload = JSON.parse(env.message);
+              if (payload && payload.type === 'FATAR_CLOUD_ORDER' && payload.order) {
+                addOrUpdateMemberOrder(payload.order, true);
+                showToast(`وصل طلب جديد الآن من "${payload.order.name}"!`, '🔔');
+              }
+            }
+          } catch (e) {}
+        };
+      } catch (e) {}
+    }
+
+    function formatMoney(val) {
+      const num = Number(val) || 0;
+      const rounded = Math.round(num * 100) / 100;
+      return `${rounded.toLocaleString('en-US')} جنيه`;
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      try {
+        const dateFormatter = new Intl.DateTimeFormat('ar-EG', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        const timeFormatter = new Intl.DateTimeFormat('ar-EG', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        document.getElementById('live-datetime').textContent =
+          `${dateFormatter.format(now)} - ${timeFormatter.format(now)}`;
+      } catch (e) {
+        document.getElementById('live-datetime').textContent = 'حاسبة الفطار اليومية';
+      }
+    }
+
+    let toastTimeout = null;
+    function showToast(message, icon = '✅') {
+      const container = document.getElementById('toast-container');
+      const msgEl = document.getElementById('toast-message');
+      const iconEl = document.getElementById('toast-icon');
+      msgEl.textContent = message;
+      iconEl.textContent = icon;
+      container.classList.remove('hidden');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        container.classList.add('hidden');
+      }, 3200);
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.items)) {
+            state = Object.assign({}, state, parsed);
+            if (!Array.isArray(state.memberOrders)) state.memberOrders = [];
+          }
+        }
+        const visits = parseInt(localStorage.getItem('fatar_visits') || '519', 10) + 1;
+        localStorage.setItem('fatar_visits', String(visits));
+        document.getElementById('visit-counter').textContent = String(visits);
+      } catch (e) {}
+
+      // Check URL hash or query parameters for member link mode or incoming encoded order
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const hash = window.location.hash || '';
+        if (params.get('room')) {
+          state.roomCode = decodeURIComponent(params.get('room'));
+        }
+        if (params.get('adminPay')) {
+          state.adminPayInfo = decodeURIComponent(params.get('adminPay'));
+        }
+        if (params.get('adminWa')) {
+          state.adminWhatsapp = decodeURIComponent(params.get('adminWa'));
+        }
+        if (params.get('importOrder')) {
+          try {
+            const decoded = JSON.parse(decodeURIComponent(escape(atob(params.get('importOrder')))));
+            if (decoded && decoded.name) {
+              addOrUpdateMemberOrder(decoded, true);
+              state.activeView = 'admin';
+            }
+          } catch (err) {}
+        } else if (params.get('mode') === 'member' || hash.includes('member')) {
+          state.activeView = 'member';
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    // Switch between Organizer View and Member Submission Form View
+    function setViewMode(mode) {
+      state.activeView = mode;
+      const adminCard = document.getElementById('main-card');
+      const memberCard = document.getElementById('member-view-card');
+      const adminBtn = document.getElementById('switch-admin-view-btn');
+      const memberBtn = document.getElementById('switch-member-view-btn');
+      const roomBadge = document.getElementById('member-room-badge');
+
+      if (roomBadge) {
+        roomBadge.textContent = `غرفة: ${state.roomCode || 'FATAR1'}`;
+      }
+
+      if (mode === 'member') {
+        adminCard.classList.add('hidden');
+        memberCard.classList.remove('hidden');
+        memberBtn.className =
+          'py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-indigo-600 text-white shadow-xs';
+        adminBtn.className =
+          'py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-50 text-slate-700 hover:bg-slate-100';
+        updateAdminPayBannerInMemberView();
+        renderMemberQuickItems();
+      } else {
+        memberCard.classList.add('hidden');
+        adminCard.classList.remove('hidden');
+        adminBtn.className =
+          'py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-blue-600 text-white shadow-xs';
+        memberBtn.className =
+          'py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition bg-slate-50 text-slate-700 hover:bg-slate-100';
+      }
+      saveState();
+    }
+
+    function updateAdminPayBannerInMemberView() {
+      const banner = document.getElementById('member-admin-pay-banner');
+      const textEl = document.getElementById('member-admin-pay-text');
+      if (state.adminPayInfo && state.adminPayInfo.trim() !== '') {
+        banner.classList.remove('hidden');
+        textEl.textContent = state.adminPayInfo.trim();
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function renderMemberQuickItems() {
+      const list = document.getElementById('member-quick-items-list');
+      list.innerHTML = '';
+
+      memberDraftItems.forEach((item) => {
+        const row = document.createElement('div');
+        row.className =
+          'bg-white border border-slate-200/90 rounded-xl p-2 px-3 flex items-center justify-between gap-2 shadow-2xs';
+
+        const label = document.createElement('div');
+        label.className = 'text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5';
+        label.innerHTML = `<span>${item.emoji || '🍽️'}</span><span>${item.name}:</span>`;
+
+        const rightSide = document.createElement('div');
+        rightSide.className = 'flex items-center gap-1.5';
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        input.step = '0.5';
+        input.placeholder = '0 ج';
+        input.value = item.price > 0 ? String(item.price) : '';
+        input.className =
+          'w-24 sm:w-28 text-center font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg py-1 px-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white';
+
+        input.addEventListener('input', () => {
+          const val = parseFloat(input.value);
+          item.price = isNaN(val) || val < 0 ? 0 : val;
+          updateMemberDraftTotal();
+        });
+
+        rightSide.appendChild(input);
+
+        if (item.isCustom) {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'text-red-500 hover:bg-red-50 px-1.5 py-1 rounded text-xs font-bold';
+          delBtn.textContent = '✕';
+          delBtn.addEventListener('click', () => {
+            memberDraftItems = memberDraftItems.filter((i) => i.id !== item.id);
+            renderMemberQuickItems();
+            updateMemberDraftTotal();
+          });
+          rightSide.appendChild(delBtn);
+        }
+
+        row.appendChild(label);
+        row.appendChild(rightSide);
+        list.appendChild(row);
+      });
+
+      updateMemberDraftTotal();
+    }
+
+    function updateMemberDraftTotal() {
+      const total = memberDraftItems.reduce((s, i) => s + (parseFloat(i.price) || 0), 0);
+      document.getElementById('member-live-total').textContent = formatMoney(total);
+    }
+
+    function handleMemberAddCustomItem() {
+      const nameIn = document.getElementById('member-custom-item-name');
+      const priceIn = document.getElementById('member-custom-item-price');
+      const name = nameIn.value.trim();
+      const price = parseFloat(priceIn.value) || 0;
+
+      if (!name) {
+        showToast('اكتب اسم الصنف أو الساندوتش الأول!', '⚠️');
+        nameIn.focus();
+        return;
+      }
+
+      memberDraftItems.push({
+        id: 'mcustom_' + Date.now(),
+        name: name,
+        emoji: '🥪',
+        price: price > 0 ? price : 0,
+        isCustom: true
+      });
+
+      nameIn.value = '';
+      priceIn.value = '';
+      renderMemberQuickItems();
+      showToast(`تمت إضافة "${name}" لطلبك`, '✅');
+    }
+
+    async function handleSubmitMemberOrder() {
+      const nameInput = document.getElementById('member-name-input');
+      const payMethodInput = document.getElementById('member-pay-method');
+      const payNumberInput = document.getElementById('member-pay-number');
+      const notesInput = document.getElementById('member-order-notes');
+
+      const memberName = nameInput.value.trim();
+      if (!memberName) {
+        showToast('من فضلك اكتب اسمك الأول!', '⚠️');
+        nameInput.focus();
+        return;
+      }
+
+      const chosenItems = memberDraftItems
+        .filter((i) => (parseFloat(i.price) || 0) > 0)
+        .map((i) => ({
+          id: i.id,
+          name: i.name,
+          emoji: i.emoji || '🍽️',
+          price: parseFloat(i.price) || 0,
+          isCustom: Boolean(i.isCustom)
+        }));
+
+      if (chosenItems.length === 0) {
+        showToast('اختر صنف واحد على الأقل أو اكتب سعر طلبك!', '⚠️');
+        return;
+      }
+
+      const totalOrderPrice = chosenItems.reduce((s, i) => s + i.price, 0);
+
+      const newOrder = {
+        id: 'ord_' + Date.now(),
+        name: memberName,
+        payMethod: payMethodInput.value,
+        payNumber: payNumberInput.value.trim() || 'لم يُكتب رقم',
+        notes: notesInput.value.trim(),
+        items: chosenItems,
+        total: totalOrderPrice,
+        paid: false,
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      const encodedPayload = btoa(unescape(encodeURIComponent(JSON.stringify(newOrder))));
+      lastSubmittedOrderCode = `FATAR_ORDER:${encodedPayload}`;
+
+      const baseUrl = getEffectiveBaseUrl();
+      const magicImportLink = `${baseUrl}?importOrder=${encodeURIComponent(encodedPayload)}`;
+
+      const itemsSummary = chosenItems.map((i) => `${i.emoji} ${i.name} (${i.price} ج)`).join(' + ');
+      lastSubmittedOrderText =
+        `🍳 *طلب فطار جديد (${state.roomCode})*\n` +
+        `👤 الاسم: *${newOrder.name}*\n` +
+        `🥪 الطلبات: ${itemsSummary}\n` +
+        (newOrder.notes ? `📝 ملاحظات: ${newOrder.notes}\n` : '') +
+        `💰 حساب الأكل: *${formatMoney(newOrder.total)}*\n` +
+        `💳 الدفع: ${newOrder.payMethod} (${newOrder.payNumber})\n` +
+        `━━━━━━━━━━━━\n` +
+        `🔗 اضغط هنا لإضافة طلبي للفاتورة تلقائياً:\n${magicImportLink}\n\n` +
+        `أو انسخ الكود:\n${lastSubmittedOrderCode}`;
+
+      // 1. Add locally & sync to invoice
+      addOrUpdateMemberOrder(newOrder, true);
+
+      // 2. Broadcast to same-browser tabs
+      if (syncChannel) {
+        try {
+          syncChannel.postMessage({ type: 'NEW_MEMBER_ORDER', order: newOrder });
+        } catch (e) {}
+      }
+
+      // 3. Push live to Cloud Room so organizer receives it on another phone automatically
+      await pushOrderToCloudRoom(newOrder);
+
+      document.getElementById('member-submitted-actions').classList.remove('hidden');
+
+      memberDraftItems = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+      nameInput.value = '';
+      payNumberInput.value = '';
+      notesInput.value = '';
+      renderMemberQuickItems();
+
+      showToast(`تم إرسال وتسجيل طلب "${newOrder.name}" بنجاح!`, '🎉');
+    }
+
+    function addOrUpdateMemberOrder(order, autoSyncToInvoice = true) {
+      const existingIdx = state.memberOrders.findIndex(
+        (o) => o.id === order.id || o.name.trim() === order.name.trim()
+      );
+      if (existingIdx >= 0) {
+        state.memberOrders[existingIdx] = order;
+      } else {
+        state.memberOrders.push(order);
+      }
+
+      if (autoSyncToInvoice) {
+        syncMemberOrdersToMainInvoice(false);
+      } else {
+        renderMemberOrdersList();
+        calculateTotals();
+      }
+    }
+
+    function syncMemberOrdersToMainInvoice(showNotification = true) {
+      if (state.memberOrders.length === 0) {
+        if (showNotification) showToast('لا توجد طلبات أفراد مسجلة بعد!', '⚠️');
+        return;
+      }
+
+      state.peopleCount = String(state.memberOrders.length);
+      document.getElementById('people-count').value = state.peopleCount;
+
+      const aggregatedItems = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+      const customMap = {};
+
+      state.memberOrders.forEach((ord) => {
+        (ord.items || []).forEach((mItem) => {
+          const defaultMatch = aggregatedItems.find(
+            (d) => d.id === mItem.id || d.name.trim() === mItem.name.trim()
+          );
+          if (defaultMatch) {
+            defaultMatch.price = (parseFloat(defaultMatch.price) || 0) + (parseFloat(mItem.price) || 0);
+          } else {
+            const key = mItem.name.trim();
+            if (!customMap[key]) {
+              customMap[key] = {
+                id: 'custom_agg_' + Object.keys(customMap).length,
+                name: key,
+                emoji: mItem.emoji || '🥪',
+                price: 0,
+                isCustom: true
+              };
+            }
+            customMap[key].price += parseFloat(mItem.price) || 0;
+          }
+        });
+      });
+
+      state.items = [...aggregatedItems, ...Object.values(customMap)];
+      renderItems();
+      renderMemberOrdersList();
+      calculateTotals();
+
+      if (showNotification) {
+        showToast('تم تجميع كل طلبات الأفراد وتحديث الفاتورة الرئيسية!', '🔄');
+      }
+    }
+
+    function renderMemberOrdersList() {
+      const listContainer = document.getElementById('member-orders-list');
+      const countBadge = document.getElementById('orders-badge-count');
+      const countSpan = document.getElementById('registered-members-count');
+      const totalSpan = document.getElementById('registered-members-total');
+
+      countBadge.textContent = String(state.memberOrders.length);
+      countSpan.textContent = String(state.memberOrders.length);
+
+      const sumMembersOrders = state.memberOrders.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
+      totalSpan.textContent = formatMoney(sumMembersOrders);
+
+      listContainer.innerHTML = '';
+
+      if (state.memberOrders.length === 0) {
+        listContainer.innerHTML = `
+          <div class="bg-white/80 border border-dashed border-indigo-200 rounded-xl p-4 text-center text-xs font-bold text-slate-500">
+            لم يسجل أحد طلبه بعد.. انسخ اللينك وابعته لزمايلك أو اضغط "إضافة طلب فرد الآن" 👆
+          </div>
+        `;
+        return;
+      }
+
+      const people = Math.max(state.memberOrders.length, parseInt(state.peopleCount, 10) || 1);
+      const totalDelivery =
+        (parseFloat(state.deliveryFee) || 0) + (parseFloat(state.deliveryTip) || 0);
+      const deliveryShare = people > 0 ? totalDelivery / people : 0;
+
+      state.memberOrders.forEach((ord) => {
+        const orderFoodTotal = parseFloat(ord.total) || 0;
+        const memberGrandTotal = Math.round((orderFoodTotal + deliveryShare) * 100) / 100;
+
+        const card = document.createElement('div');
+        card.className = `bg-white border rounded-xl p-3 shadow-2xs transition ${
+          ord.paid ? 'border-emerald-300 bg-emerald-50/30' : 'border-slate-200'
+        }`;
+
+        const itemsHtml = (ord.items || [])
+          .map(
+            (i) =>
+              `<span class="inline-block bg-slate-100 text-slate-800 border border-slate-200 rounded-md px-2 py-0.5 text-[11px] font-bold">${i.emoji} ${i.name} (${i.price} ج)</span>`
+          )
+          .join(' ');
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2 border-b border-slate-100 pb-2 mb-2">
+            <div>
+              <div class="font-black text-slate-800 text-sm flex items-center gap-1.5">
+                <span>👤 ${ord.name}</span>
+                <span class="text-[10px] font-bold text-slate-400">(${ord.time || 'الآن'})</span>
+              </div>
+              <div class="text-[11px] font-bold text-indigo-700 mt-0.5">
+                💳 ${ord.payMethod}: <span class="font-mono bg-indigo-50 px-1.5 py-0.5 rounded">${ord.payNumber}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 no-print">
+              <button type="button" data-copy-pay="${ord.payNumber}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold px-2 py-1 rounded-lg transition" title="نسخ رقم الدفع">
+                📋 نسخ الرقم
+              </button>
+              <button type="button" data-del-ord="${ord.id}" class="text-red-500 hover:bg-red-50 px-2 py-1 rounded-lg text-xs font-bold transition" title="حذف طلب الفرد">
+                🗑️
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-1 mb-2">
+            ${itemsHtml}
+          </div>
+
+          ${
+            ord.notes
+              ? `<div class="text-[11px] font-semibold text-amber-800 bg-amber-50/80 border border-amber-200/70 rounded-lg px-2.5 py-1 mb-2">📝 ملاحظات: ${ord.notes}</div>`
+              : ''
+          }
+
+          <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 text-xs font-extrabold">
+            <div class="text-slate-700">
+              <span>أكل: ${formatMoney(orderFoodTotal)}</span>
+              <span class="text-slate-400 mx-1">+</span>
+              <span class="text-orange-700">دليفري: ${formatMoney(deliveryShare)}</span>
+              <span class="text-slate-400 mx-1">=</span>
+              <span class="text-indigo-950 font-black">الإجمالي: ${formatMoney(memberGrandTotal)}</span>
+            </div>
+            <button
+              type="button"
+              data-toggle-paid="${ord.id}"
+              class="no-print px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition ${
+                ord.paid
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-amber-100 text-amber-900 hover:bg-amber-200'
+              }"
+            >
+              ${ord.paid ? '✅ خالص' : '⏳ لم يدفع'}
+            </button>
+          </div>
+        `;
+
+        const copyPayBtn = card.querySelector('[data-copy-pay]');
+        if (copyPayBtn) {
+          copyPayBtn.addEventListener('click', () => {
+            copyTextToClipboard(ord.payNumber, `تم نسخ رقم دفع ${ord.name}: ${ord.payNumber}`);
+          });
+        }
+
+        const delOrdBtn = card.querySelector('[data-del-ord]');
+        if (delOrdBtn) {
+          delOrdBtn.addEventListener('click', () => {
+            state.memberOrders = state.memberOrders.filter((o) => o.id !== ord.id);
+            syncMemberOrdersToMainInvoice(false);
+            renderMemberOrdersList();
+            calculateTotals();
+            showToast(`تم حذف طلب "${ord.name}"`, '🗑️');
+          });
+        }
+
+        const togglePaidBtn = card.querySelector('[data-toggle-paid]');
+        if (togglePaidBtn) {
+          togglePaidBtn.addEventListener('click', () => {
+            ord.paid = !ord.paid;
+            renderMemberOrdersList();
+            saveState();
+          });
+        }
+
+        listContainer.appendChild(card);
+      });
+    }
+
+    function handleImportOrderText() {
+      const textarea = document.getElementById('import-order-textarea');
+      const raw = textarea.value.trim();
+      if (!raw) {
+        showToast('الصق الرسالة أو الكود أولاً!', '⚠️');
+        return;
+      }
+
+      const codeMatch = raw.match(/FATAR_ORDER:([A-Za-z0-9+/=]+)/) || raw.match(/importOrder=([A-Za-z0-9%+/=]+)/);
+      if (codeMatch && codeMatch[1]) {
+        try {
+          const cleanB64 = decodeURIComponent(codeMatch[1]);
+          const decoded = JSON.parse(decodeURIComponent(escape(atob(cleanB64))));
+          if (decoded && decoded.name) {
+            addOrUpdateMemberOrder(decoded, true);
+            textarea.value = '';
+            closeImportModal();
+            showToast(`تم استيراد طلب "${decoded.name}" بنجاح!`, '🎉');
+            return;
+          }
+        } catch (e) {}
+      }
+
+      const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
+      const nameLine = lines.find((l) => l.includes('الاسم:')) || lines[0] || 'زميل';
+      const cleanName = nameLine.replace(/.*الاسم:\s*/, '').replace(/\*/g, '').trim() || 'زميل';
+      const priceMatch = raw.match(/(\d+(?:\.\d+)?)\s*(?:جنيه|ج)/);
+      const priceVal = priceMatch ? parseFloat(priceMatch[1]) : 0;
+      const phoneMatch = raw.match(/(01[0125]\d{8})/);
+
+      const fallbackOrder = {
+        id: 'ord_' + Date.now(),
+        name: cleanName,
+        payMethod: 'تحويل / محفظة',
+        payNumber: phoneMatch ? phoneMatch[1] : 'غير محدد',
+        notes: raw,
+        items: [{ id: 'custom_' + Date.now(), name: 'طلب مجمع', emoji: '🥪', price: priceVal, isCustom: true }],
+        total: priceVal,
+        paid: false,
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      addOrUpdateMemberOrder(fallbackOrder, true);
+      textarea.value = '';
+      closeImportModal();
+      showToast(`تمت إضافة طلب "${cleanName}" للتجميعة!`, '✅');
+    }
+
+    function closeImportModal() {
+      const modal = document.getElementById('import-order-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function isLocalOrSandboxUrl(url) {
+      return (
+        !url ||
+        url.startsWith('about:') ||
+        url.startsWith('blob:') ||
+        url.startsWith('data:') ||
+        url.startsWith('file:') ||
+        url.includes('usercontent.goog')
+      );
+    }
+
+    function getEffectiveBaseUrl() {
+      if (state.customPublicUrl && state.customPublicUrl.trim().startsWith('http')) {
+        return state.customPublicUrl.trim().split('?')[0].split('#')[0];
+      }
+      const currentHref = window.location.href.split('?')[0].split('#')[0];
+      return currentHref;
+    }
+
+    // Build Shareable Member Link
+    function buildMemberShareLink() {
+      const baseUrl = getEffectiveBaseUrl();
+      const params = new URLSearchParams();
+      params.set('mode', 'member');
+      params.set('room', (state.roomCode || 'FATAR1').trim());
+      if (state.adminPayInfo && state.adminPayInfo.trim()) {
+        params.set('adminPay', state.adminPayInfo.trim());
+      }
+      if (state.adminWhatsapp && state.adminWhatsapp.trim()) {
+        params.set('adminWa', state.adminWhatsapp.trim());
+      }
+      return `${baseUrl}?${params.toString()}#member`;
+    }
+
+    // Download the self-contained HTML file so the user can upload it to any free host
+    function downloadSelfHtmlFile() {
+      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      showToast('تم تحميل ملف الموقع (index.html) جاهز للرفع!', '⬇️');
+    }
+
+    function renderItems() {
+      const container = document.getElementById('items-container');
+      container.innerHTML = '';
+
+      state.items.forEach((item) => {
+        const numPrice = parseFloat(item.price) || 0;
+        const isEmpty = numPrice <= 0;
+
+        const row = document.createElement('div');
+        row.className = `bg-white border border-slate-200/80 rounded-xl p-2.5 px-3 flex items-center justify-between gap-3 shadow-2xs transition ${
+          isEmpty ? 'empty-item-row' : ''
+        } ${isEmpty && !state.showEmptyInPrint ? 'hide-on-print' : ''}`;
+        row.dataset.itemId = item.id;
+
+        const labelSide = document.createElement('div');
+        labelSide.className = 'flex items-center gap-2 font-bold text-slate-700 text-sm sm:text-base';
+        labelSide.innerHTML = `
+          <span>${item.emoji || '🍽️'}</span>
+          <span>${item.name}:</span>
+        `;
+
+        const inputSide = document.createElement('div');
+        inputSide.className = 'flex items-center gap-2';
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        input.step = '0.5';
+        input.value = item.price === 0 ? '0' : String(item.price);
+        input.className =
+          'w-28 sm:w-32 text-center font-bold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg py-1.5 px-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition';
+        input.setAttribute('aria-label', item.name);
+
+        input.addEventListener('focus', () => {
+          if (input.value === '0') input.value = '';
+        });
+
+        input.addEventListener('blur', () => {
+          if (input.value.trim() === '') {
+            input.value = '0';
+            item.price = 0;
+            updateRowPrintClass(row, 0);
+            calculateTotals();
+          }
+        });
+
+        input.addEventListener('input', () => {
+          const val = parseFloat(input.value);
+          item.price = isNaN(val) || val < 0 ? 0 : val;
+          updateRowPrintClass(row, item.price);
+          calculateTotals();
+        });
+
+        inputSide.appendChild(input);
+
+        if (item.isCustom) {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.title = 'حذف الصنف';
+          delBtn.className =
+            'no-print text-red-500 hover:text-red-700 hover:bg-red-50 w-8 h-8 rounded-lg flex items-center justify-center font-bold transition';
+          delBtn.textContent = '🗑️';
+          delBtn.addEventListener('click', () => {
+            state.items = state.items.filter((i) => i.id !== item.id);
+            renderItems();
+            calculateTotals();
+            showToast(`تم حذف "${item.name}"`, '🗑️');
+          });
+          inputSide.appendChild(delBtn);
+        }
+
+        row.appendChild(labelSide);
+        row.appendChild(inputSide);
+        container.appendChild(row);
+      });
+    }
+
+    function updateRowPrintClass(row, price) {
+      const isEmpty = (parseFloat(price) || 0) <= 0;
+      row.classList.toggle('empty-item-row', isEmpty);
+      row.classList.toggle('hide-on-print', isEmpty && !state.showEmptyInPrint);
+    }
+
+    function updateDeliveryModeUI() {
+      const btnFromBudget = document.getElementById('mode-from-budget-btn');
+      const btnExtra = document.getElementById('mode-extra-per-person-btn');
+
+      if (state.deliveryMode === 'from_budget') {
+        btnFromBudget.className =
+          'py-2 px-2.5 rounded-lg text-xs font-extrabold border transition bg-blue-600 text-white border-blue-600';
+        btnExtra.className =
+          'py-2 px-2.5 rounded-lg text-xs font-extrabold border transition bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+      } else {
+        btnExtra.className =
+          'py-2 px-2.5 rounded-lg text-xs font-extrabold border transition bg-blue-600 text-white border-blue-600';
+        btnFromBudget.className =
+          'py-2 px-2.5 rounded-lg text-xs font-extrabold border transition bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+      }
+    }
+
+    function calculateTotals() {
+      const people = Math.max(0, parseInt(state.peopleCount, 10) || 0);
+      const perPersonCollected = Math.max(0, parseFloat(state.amountPerPerson) || 0);
+
+      const totalOrders = state.items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+
+      const deliveryFee = Math.max(0, parseFloat(state.deliveryFee) || 0);
+      const deliveryTip = Math.max(0, parseFloat(state.deliveryTip) || 0);
+      const totalDelivery = deliveryFee + deliveryTip;
+      const deliveryPerPerson = people > 0 ? totalDelivery / people : 0;
+
+      const baseBudget = people * perPersonCollected;
+      const effectiveBudget =
+        state.deliveryMode === 'extra_per_person' && people > 0
+          ? baseBudget + totalDelivery
+          : baseBudget;
+
+      const grandTotal = totalOrders + totalDelivery;
+      const fairSharePerPerson = people > 0 ? grandTotal / people : 0;
+      const balance = effectiveBudget - grandTotal;
+
+      document.getElementById('total-budget-display').textContent = formatMoney(effectiveBudget);
+      document.getElementById('total-orders-display').textContent = formatMoney(totalOrders);
+      document.getElementById('total-delivery-display').textContent = formatMoney(totalDelivery);
+      document.getElementById('delivery-per-person-display').textContent =
+        people > 0 ? `${formatMoney(deliveryPerPerson)} / فرد` : formatMoney(totalDelivery);
+
+      document.getElementById('grand-total-display').textContent = formatMoney(grandTotal);
+
+      const fairShareLabel = document.getElementById('fair-share-label');
+      const fairShareDisplay = document.getElementById('fair-share-display');
+      if (state.deliveryMode === 'extra_per_person' && people > 0) {
+        const requiredPerPerson = perPersonCollected + deliveryPerPerson;
+        fairShareLabel.textContent = 'المطلوب من كل فرد (شامل الدليفري):';
+        fairShareDisplay.textContent = formatMoney(requiredPerPerson);
+      } else {
+        fairShareLabel.textContent = 'التكلفة الفعلية للفرد (بالدليفري):';
+        fairShareDisplay.textContent = people > 0 ? formatMoney(fairSharePerPerson) : '0 جنيه';
+      }
+
+      const balanceBox = document.getElementById('balance-box');
+      const balanceLabel = document.getElementById('balance-label');
+      const balanceDisplay = document.getElementById('balance-display');
+      const diffNote = document.getElementById('per-person-diff-note');
+
+      if (balance > 0) {
+        balanceBox.className =
+          'bg-emerald-100/90 border border-emerald-300 rounded-xl p-3.5 flex items-center justify-between text-emerald-950 font-black transition';
+        balanceLabel.textContent = 'الباقي معانا (فائض):';
+        balanceDisplay.textContent = formatMoney(balance);
+
+        if (people > 0) {
+          diffNote.className = 'block text-xs font-bold text-center py-2 px-3 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200';
+          diffNote.textContent = `💡 نصيب كل فرد من الباقي: ${formatMoney(balance / people)}`;
+        } else {
+          diffNote.className = 'hidden';
+        }
+      } else if (balance < 0) {
+        const deficit = Math.abs(balance);
+        balanceBox.className =
+          'bg-red-100/90 border border-red-300 rounded-xl p-3.5 flex items-center justify-between text-red-900 font-black transition';
+        balanceLabel.textContent = 'العجز (مطلوب زيادة):';
+        balanceDisplay.textContent = formatMoney(deficit);
+
+        if (people > 0) {
+          diffNote.className = 'block text-xs font-bold text-center py-2 px-3 rounded-lg bg-red-50 text-red-800 border border-red-200';
+          diffNote.textContent = `⚠️ كل فرد محتاج يكمل: ${formatMoney(deficit / people)}`;
+        } else {
+          diffNote.className = 'hidden';
+        }
+      } else {
+        balanceBox.className =
+          'bg-sky-100/90 border border-sky-200 rounded-xl p-3.5 flex items-center justify-between text-sky-900 font-black transition';
+        balanceLabel.textContent = 'الباقي معانا:';
+        balanceDisplay.textContent = '0 جنيه';
+        diffNote.className = 'hidden';
+      }
+
+      renderMemberOrdersList();
+      saveState();
+    }
+
+    function handleAddCustomItem() {
+      const nameInput = document.getElementById('custom-item-name');
+      const priceInput = document.getElementById('custom-item-price');
+
+      const name = nameInput.value.trim();
+      const price = parseFloat(priceInput.value) || 0;
+
+      if (!name) {
+        showToast('اكتب اسم الصنف الأول!', '⚠️');
+        nameInput.focus();
+        return;
+      }
+
+      const newItem = {
+        id: 'custom_' + Date.now(),
+        name: name,
+        emoji: '🍽️',
+        price: price < 0 ? 0 : price,
+        isCustom: true
+      };
+
+      state.items.push(newItem);
+      nameInput.value = '';
+      priceInput.value = '';
+      renderItems();
+      calculateTotals();
+      showToast(`تمت إضافة "${name}" للفاتورة`, '✅');
+    }
+
+    function buildWhatsAppSummary() {
+      const people = Math.max(0, parseInt(state.peopleCount, 10) || 0);
+      const perPerson = Math.max(0, parseFloat(state.amountPerPerson) || 0);
+      const totalOrders = state.items.reduce((s, i) => s + (parseFloat(i.price) || 0), 0);
+      const totalDelivery = (parseFloat(state.deliveryFee) || 0) + (parseFloat(state.deliveryTip) || 0);
+      const grandTotal = totalOrders + totalDelivery;
+      const baseBudget = people * perPerson;
+      const effectiveBudget =
+        state.deliveryMode === 'extra_per_person' && people > 0 ? baseBudget + totalDelivery : baseBudget;
+      const balance = effectiveBudget - grandTotal;
+      const deliveryShare = people > 0 ? totalDelivery / people : 0;
+
+      const activeItems = state.items.filter((i) => (parseFloat(i.price) || 0) > 0 || state.showEmptyInPrint);
+
+      let lines = [];
+      lines.push('🍳 *فاتورة وتجميعة الفطار الدولي*');
+      lines.push(`📅 ${document.getElementById('live-datetime').textContent}`);
+      lines.push('━━━━━━━━━━━━━━');
+
+      if (state.memberOrders.length > 0) {
+        lines.push('🙋‍♂️ *تفاصيل طلبات الأفراد:*');
+        state.memberOrders.forEach((ord, idx) => {
+          const itemsTxt = (ord.items || []).map((i) => `${i.name} (${i.price}ج)`).join(' + ');
+          const personTotal = (parseFloat(ord.total) || 0) + deliveryShare;
+          lines.push(
+            `${idx + 1}. *${ord.name}*: ${itemsTxt} | شامل الدليفري: *${formatMoney(personTotal)}* | (${ord.payMethod}: ${ord.payNumber}) [${ord.paid ? '✅ خالص' : '⏳ لم يدفع'}]`
+          );
+        });
+        lines.push('━━━━━━━━━━━━━━');
+      }
+
+      lines.push('🛒 *التجميعة الكلية للمطعم:*');
+      if (activeItems.length === 0) {
+        lines.push('- لا توجد أصناف مسجلة بعد');
+      } else {
+        activeItems.forEach((item) => {
+          lines.push(`${item.emoji} ${item.name}: ${formatMoney(item.price)}`);
+        });
+      }
+      lines.push(`🔸 إجمالي الطلبات: ${formatMoney(totalOrders)}`);
+      lines.push(`🛵 الدليفري والخدمة: ${formatMoney(totalDelivery)}`);
+      if (people > 0 && totalDelivery > 0) {
+        lines.push(`   (نصيب الفرد من الدليفري: ${formatMoney(deliveryShare)})`);
+      }
+      lines.push('━━━━━━━━━━━━━━');
+      lines.push(`📊 *إجمالي الفاتورة الكلي:* ${formatMoney(grandTotal)}`);
+      if (balance >= 0) {
+        lines.push(`✅ *الباقي معانا:* ${formatMoney(balance)}`);
+      } else {
+        lines.push(`⚠️ *العجز المطلوب:* ${formatMoney(Math.abs(balance))}`);
+      }
+
+      return lines.join('\n');
+    }
+
+    function copyTextToClipboard(text, customMessage = 'تم النسخ بنجاح!') {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          () => showToast(customMessage, '📋'),
+          () => fallbackCopy(text, customMessage)
+        );
+      } else {
+        fallbackCopy(text, customMessage);
+      }
+    }
+
+    function fallbackCopy(text, customMessage) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(customMessage, '📋');
+      } catch (e) {
+        showToast('تعذر النسخ التلقائي', '⚠️');
+      }
+      document.body.removeChild(ta);
+    }
+
+    async function handleSaveAsImage() {
+      const card = document.getElementById('main-card');
+      showToast('جاري تجهيز صورة الفاتورة...', '📸');
+
+      const noPrintEls = card.querySelectorAll('.no-print');
+      const hiddenEmptyEls = !state.showEmptyInPrint
+        ? card.querySelectorAll('.empty-item-row')
+        : [];
+
+      noPrintEls.forEach((el) => el.classList.add('hidden'));
+      hiddenEmptyEls.forEach((el) => el.classList.add('hidden'));
+
+      try {
+        if (typeof html2canvas === 'function') {
+          const canvas = await html2canvas(card, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            useCORS: true
+          });
+          const dataUrl = canvas.toDataURL('image/png');
+          openImageModal(dataUrl);
+        } else {
+          const fallbackUrl = drawNativeCanvasInvoice();
+          openImageModal(fallbackUrl);
+        }
+      } catch (err) {
+        const fallbackUrl = drawNativeCanvasInvoice();
+        openImageModal(fallbackUrl);
+      } finally {
+        noPrintEls.forEach((el) => el.classList.remove('hidden'));
+        hiddenEmptyEls.forEach((el) => el.classList.remove('hidden'));
+      }
+    }
+
+    function drawNativeCanvasInvoice() {
+      const canvas = document.createElement('canvas');
+      const activeItems = state.items.filter(
+        (i) => (parseFloat(i.price) || 0) > 0 || state.showEmptyInPrint
+      );
+      const rowCount = Math.max(1, activeItems.length + state.memberOrders.length);
+      canvas.width = 640;
+      canvas.height = 520 + rowCount * 42;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.direction = 'rtl';
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 28px sans-serif';
+      ctx.fillText('🍳 فاتورة حساب الفطار الدولي', 600, 50);
+
+      ctx.fillStyle = '#475569';
+      ctx.font = '16px sans-serif';
+      ctx.fillText(document.getElementById('live-datetime').textContent, 600, 82);
+
+      let y = 125;
+      ctx.font = 'bold 20px sans-serif';
+      ctx.fillStyle = '#1e40af';
+      ctx.fillText('الأصناف والطلبات:', 600, y);
+      y += 35;
+
+      ctx.font = '18px sans-serif';
+      ctx.fillStyle = '#1e293b';
+      activeItems.forEach((item) => {
+        ctx.fillText(`${item.emoji} ${item.name}`, 600, y);
+        ctx.fillText(formatMoney(item.price), 180, y);
+        y += 38;
+      });
+
+      y += 15;
+      ctx.fillStyle = '#c2410c';
+      ctx.font = 'bold 19px sans-serif';
+      ctx.fillText(
+        `🛵 إجمالي الدليفري: ${document.getElementById('total-delivery-display').textContent}`,
+        600,
+        y
+      );
+      y += 35;
+      ctx.fillStyle = '#0f172a';
+      ctx.fillText(
+        `📊 إجمالي الفاتورة: ${document.getElementById('grand-total-display').textContent}`,
+        600,
+        y
+      );
+      y += 35;
+      ctx.fillStyle = '#047857';
+      ctx.fillText(
+        `${document.getElementById('balance-label').textContent} ${
+          document.getElementById('balance-display').textContent
+        }`,
+        600,
+        y
+      );
+
+      return canvas.toDataURL('image/png');
+    }
+
+    let latestInvoiceDataUrl = '';
+    function openImageModal(dataUrl) {
+      const modal = document.getElementById('image-modal');
+      const img = document.getElementById('generated-invoice-img');
+      latestInvoiceDataUrl = dataUrl;
+      img.src = dataUrl;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      showToast('تم تجهيز صورة الفاتورة بنجاح!', '✅');
+    }
+
+    function closeImageModal() {
+      const modal = document.getElementById('image-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openHostingModal() {
+      const modal = document.getElementById('hosting-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeHostingModal() {
+      const modal = document.getElementById('hosting-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Initialize App and Listeners
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      updateDateTime();
+      setInterval(updateDateTime, 30000);
+
+      const peopleInput = document.getElementById('people-count');
+      const amountInput = document.getElementById('amount-per-person');
+      const deliveryFeeInput = document.getElementById('delivery-fee');
+      const deliveryTipInput = document.getElementById('delivery-tip');
+      const showEmptyCheckbox = document.getElementById('show-empty-items');
+      const adminWaInput = document.getElementById('admin-whatsapp-input');
+      const adminPayInput = document.getElementById('admin-pay-info-input');
+      const roomCodeInput = document.getElementById('room-code-input');
+      const customPublicUrlInput = document.getElementById('custom-public-url-input');
+
+      peopleInput.value = state.peopleCount;
+      amountInput.value = state.amountPerPerson;
+      deliveryFeeInput.value = state.deliveryFee || 0;
+      deliveryTipInput.value = state.deliveryTip || 0;
+      showEmptyCheckbox.checked = Boolean(state.showEmptyInPrint);
+      adminWaInput.value = state.adminWhatsapp || '';
+      adminPayInput.value = state.adminPayInfo || '';
+      roomCodeInput.value = state.roomCode || 'FATAR-100';
+      customPublicUrlInput.value = state.customPublicUrl || '';
+
+      updateDeliveryModeUI();
+      renderItems();
+      renderMemberQuickItems();
+      calculateTotals();
+      setViewMode(state.activeView || 'admin');
+
+      // Connect Cloud Room Sync automatically
+      fetchCloudRoomOrders(false);
+      connectCloudLiveStream();
+
+      // Mode Switcher Buttons
+      document.getElementById('switch-admin-view-btn').addEventListener('click', () => {
+        setViewMode('admin');
+      });
+      document.getElementById('switch-member-view-btn').addEventListener('click', () => {
+        setViewMode('member');
+      });
+      document.getElementById('open-member-form-btn').addEventListener('click', () => {
+        setViewMode('member');
+      });
+
+      // Hosting Modal Listeners
+      document.getElementById('open-hosting-modal-btn').addEventListener('click', openHostingModal);
+      document.getElementById('close-hosting-modal-btn').addEventListener('click', closeHostingModal);
+      document.getElementById('close-hosting-modal-btn-2').addEventListener('click', closeHostingModal);
+      document.getElementById('download-html-file-btn').addEventListener('click', downloadSelfHtmlFile);
+
+      customPublicUrlInput.addEventListener('input', () => {
+        state.customPublicUrl = customPublicUrlInput.value.trim();
+        saveState();
+      });
+
+      // Room Code & Cloud Refresh Listeners
+      roomCodeInput.addEventListener('change', () => {
+        state.roomCode = roomCodeInput.value.trim().toUpperCase() || 'FATAR-100';
+        roomCodeInput.value = state.roomCode;
+        saveState();
+        fetchCloudRoomOrders(true);
+        connectCloudLiveStream();
+      });
+
+      document.getElementById('refresh-cloud-orders-btn').addEventListener('click', () => {
+        fetchCloudRoomOrders(true);
+      });
+
+      // Organizer Settings Listeners
+      adminWaInput.addEventListener('input', () => {
+        state.adminWhatsapp = adminWaInput.value;
+        saveState();
+      });
+      adminPayInput.addEventListener('input', () => {
+        state.adminPayInfo = adminPayInput.value;
+        updateAdminPayBannerInMemberView();
+        saveState();
+      });
+
+      document.getElementById('copy-admin-pay-btn').addEventListener('click', () => {
+        copyTextToClipboard(state.adminPayInfo, 'تم نسخ رقم تحويل منظم الفطار!');
+      });
+
+      // Copy & Share Member Order Link
+      document.getElementById('copy-member-link-btn').addEventListener('click', () => {
+        const baseUrl = getEffectiveBaseUrl();
+        if (isLocalOrSandboxUrl(baseUrl)) {
+          openHostingModal();
+          showToast('ارفع ملف الموقع مجاناً في ثواني عشان اللينك يشتغل عند كل الناس!', '🌐');
+          return;
+        }
+        const link = buildMemberShareLink();
+        copyTextToClipboard(link, 'تم نسخ لينك تسجيل طلبات الأفراد! ابعته لزمايلك');
+      });
+
+      document.getElementById('share-link-whatsapp-btn').addEventListener('click', () => {
+        const baseUrl = getEffectiveBaseUrl();
+        if (isLocalOrSandboxUrl(baseUrl)) {
+          openHostingModal();
+          showToast('ارفع ملف الموقع الأول أو حط رابط موقعك عشان تبعته ع الواتساب!', '🌐');
+          return;
+        }
+        const link = buildMemberShareLink();
+        const msg =
+          `🍳 *تجميعة الفطار الدولي (غرفة ${state.roomCode})*\n` +
+          `يا جماعة اللي هيفطر معانا يدخل على اللينك ده يكتب اسمه وطلبه ورقم الدفع بتاعه وهيتجمع عندي تلقائياً:\n` +
+          `${link}`;
+        copyTextToClipboard(msg, 'تم نسخ رسالة اللينك! جاري فتح واتساب...');
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+      });
+
+      // Import Order Modal Controls
+      const importModal = document.getElementById('import-order-modal');
+      document.getElementById('open-import-modal-btn').addEventListener('click', () => {
+        importModal.classList.remove('hidden');
+        importModal.classList.add('flex');
+        document.getElementById('import-order-textarea').focus();
+      });
+      document.getElementById('close-import-modal-btn').addEventListener('click', closeImportModal);
+      document.getElementById('cancel-import-modal-btn').addEventListener('click', closeImportModal);
+      document.getElementById('confirm-import-order-btn').addEventListener('click', handleImportOrderText);
+
+      document.getElementById('sync-orders-to-invoice-btn').addEventListener('click', () => {
+        syncMemberOrdersToMainInvoice(true);
+      });
+
+      // Member View Controls
+      document.getElementById('member-add-custom-btn').addEventListener('click', handleMemberAddCustomItem);
+      document.getElementById('member-custom-item-price').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleMemberAddCustomItem();
+      });
+      document.getElementById('submit-member-order-btn').addEventListener('click', handleSubmitMemberOrder);
+
+      document.getElementById('send-member-order-whatsapp-btn').addEventListener('click', () => {
+        if (!lastSubmittedOrderText) return;
+        let cleanPhone = (state.adminWhatsapp || '').replace(/\D/g, '');
+        if (cleanPhone.startsWith('01') && cleanPhone.length === 11) {
+          cleanPhone = '2' + cleanPhone;
+        }
+        const waUrl = cleanPhone
+          ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(lastSubmittedOrderText)}`
+          : `https://wa.me/?text=${encodeURIComponent(lastSubmittedOrderText)}`;
+        window.open(waUrl, '_blank');
+      });
+
+      document.getElementById('copy-member-order-code-btn').addEventListener('click', () => {
+        if (!lastSubmittedOrderText) return;
+        copyTextToClipboard(lastSubmittedOrderText, 'تم نسخ كود وتفاصيل طلبك! ابعته لمنظم الفطار');
+      });
+
+      // Main Budget & Delivery Listeners
+      peopleInput.addEventListener('input', () => {
+        state.peopleCount = peopleInput.value;
+        calculateTotals();
+      });
+
+      amountInput.addEventListener('input', () => {
+        state.amountPerPerson = amountInput.value;
+        calculateTotals();
+      });
+
+      deliveryFeeInput.addEventListener('focus', () => {
+        if (deliveryFeeInput.value === '0') deliveryFeeInput.value = '';
+      });
+      deliveryFeeInput.addEventListener('blur', () => {
+        if (deliveryFeeInput.value.trim() === '') {
+          deliveryFeeInput.value = '0';
+          state.deliveryFee = 0;
+          calculateTotals();
+        }
+      });
+      deliveryFeeInput.addEventListener('input', () => {
+        state.deliveryFee = parseFloat(deliveryFeeInput.value) || 0;
+        calculateTotals();
+      });
+
+      deliveryTipInput.addEventListener('focus', () => {
+        if (deliveryTipInput.value === '0') deliveryTipInput.value = '';
+      });
+      deliveryTipInput.addEventListener('blur', () => {
+        if (deliveryTipInput.value.trim() === '') {
+          deliveryTipInput.value = '0';
+          state.deliveryTip = 0;
+          calculateTotals();
+        }
+      });
+      deliveryTipInput.addEventListener('input', () => {
+        state.deliveryTip = parseFloat(deliveryTipInput.value) || 0;
+        calculateTotals();
+      });
+
+      document.getElementById('mode-from-budget-btn').addEventListener('click', () => {
+        state.deliveryMode = 'from_budget';
+        updateDeliveryModeUI();
+        calculateTotals();
+      });
+
+      document.getElementById('mode-extra-per-person-btn').addEventListener('click', () => {
+        state.deliveryMode = 'extra_per_person';
+        updateDeliveryModeUI();
+        calculateTotals();
+      });
+
+      document.getElementById('add-custom-item-btn').addEventListener('click', handleAddCustomItem);
+      document.getElementById('custom-item-price').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddCustomItem();
+      });
+      document.getElementById('custom-item-name').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('custom-item-price').focus();
+      });
+
+      showEmptyCheckbox.addEventListener('change', () => {
+        state.showEmptyInPrint = showEmptyCheckbox.checked;
+        renderItems();
+        saveState();
+      });
+
+      document.getElementById('print-btn').addEventListener('click', () => {
+        window.print();
+      });
+
+      document.getElementById('save-image-btn').addEventListener('click', handleSaveAsImage);
+
+      document.getElementById('download-image-btn').addEventListener('click', () => {
+        if (!latestInvoiceDataUrl) return;
+        const a = document.createElement('a');
+        a.href = latestInvoiceDataUrl;
+        a.download = 'fatar-invoice.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+      document.getElementById('close-image-modal-btn').addEventListener('click', closeImageModal);
+      document.getElementById('close-image-modal-btn-2').addEventListener('click', closeImageModal);
+
+      document.getElementById('copy-whatsapp-btn').addEventListener('click', () => {
+        const text = buildWhatsAppSummary();
+        copyTextToClipboard(text, 'تم نسخ تفاصيل الفاتورة وتجميعة الأفراد للواتساب!');
+      });
+
+      const resetModal = document.getElementById('reset-modal');
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        resetModal.classList.remove('hidden');
+        resetModal.classList.add('flex');
+      });
+
+      document.getElementById('cancel-reset-btn').addEventListener('click', () => {
+        resetModal.classList.add('hidden');
+        resetModal.classList.remove('flex');
+      });
+
+      document.getElementById('confirm-reset-btn').addEventListener('click', () => {
+        state = {
+          activeView: 'admin',
+          roomCode: 'FATAR-' + Math.floor(100 + Math.random() * 900),
+          customPublicUrl: state.customPublicUrl || '',
+          adminWhatsapp: state.adminWhatsapp || '',
+          adminPayInfo: state.adminPayInfo || '',
+          peopleCount: '',
+          amountPerPerson: '',
+          deliveryFee: 0,
+          deliveryTip: 0,
+          deliveryMode: 'from_budget',
+          showEmptyInPrint: false,
+          items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)),
+          memberOrders: []
+        };
+        peopleInput.value = '';
+        amountInput.value = '';
+        deliveryFeeInput.value = '0';
+        deliveryTipInput.value = '0';
+        roomCodeInput.value = state.roomCode;
+        showEmptyCheckbox.checked = false;
+
+        updateDeliveryModeUI();
+        renderItems();
+        renderMemberOrdersList();
+        calculateTotals();
+        connectCloudLiveStream();
+
+        resetModal.classList.add('hidden');
+        resetModal.classList.remove('flex');
+        showToast('تم تصفير الفاتورة وفتح غرفة تجميعة جديدة!', '🔄');
+      });
+    });
+  </script>
+</body>
+</html>
